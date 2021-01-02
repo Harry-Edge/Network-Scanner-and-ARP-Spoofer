@@ -1,8 +1,7 @@
 import scapy.all as scapy
-import argparse
 import socket
 import time 
-import subprocess 
+import subprocess
 
 
 class NetworkScanner:
@@ -132,7 +131,7 @@ class Spoof:
 
 
 def run_program():
-    scan = Network_Scanner()
+    scan = NetworkScanner()
     scan.run("192.168.1.1/24")
 
     run_spoof_choice = ""
@@ -180,5 +179,5 @@ def run_program():
 
 run_program()
 
-#This needs to be run in order for the target machine internet to continue working
+# This needs to be run in order for the target machine internet to continue working
 # sudo sysctl -w net.inet.ip.forwarding=1
