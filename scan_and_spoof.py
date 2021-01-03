@@ -7,7 +7,6 @@ import subprocess
 class NetworkScanner:
     def __init__(self):
         self.clients_list = []
-        self.hostname = ""
         self.amount_of_scans_ran = 0
 
     def scan(self, ip):
