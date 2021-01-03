@@ -99,7 +99,7 @@ class Spoof:
     def run(self):
         # Allows the internet connection to continue on target device
         print("\nEnabling Packet Forwarding")
-        (subprocess.run(["sudo", "sysctl", "-w", "net.inet.ip.forwarding=1"]))
+        subprocess.run(["sudo", "sysctl", "-w", "net.inet.ip.forwarding=1"])
 
         # Gets the name of the target device 
         try:
